@@ -1,3 +1,70 @@
 [gd_scene format=3 uid="uid://ciu8wsel3encd"]
 
-[node name="CharacterBody2D" type="CharacterBody2D" unique_id=19650070]
+[ext_resource type="Script" uid="uid://cnvn76vnjbjob" path="res://Scripts/Player/player.gd" id="1_ft8w5"]
+[ext_resource type="Texture2D" uid="uid://d0q287prsu40c" path="res://Assets/Player/Itzan/idle (2).png" id="2_h54ih"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ude3g"]
+atlas = ExtResource("2_h54ih")
+region = Rect2(0, 0, 256, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jmcll"]
+atlas = ExtResource("2_h54ih")
+region = Rect2(256, 0, 256, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4wape"]
+atlas = ExtResource("2_h54ih")
+region = Rect2(512, 0, 256, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t26db"]
+atlas = ExtResource("2_h54ih")
+region = Rect2(768, 0, 256, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fk5o5"]
+atlas = ExtResource("2_h54ih")
+region = Rect2(1024, 0, 256, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_825xp"]
+atlas = ExtResource("2_h54ih")
+region = Rect2(1280, 0, 256, 1024)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5h11f"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ude3g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jmcll")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4wape")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t26db")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fk5o5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_825xp")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 9.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5h11f"]
+size = Vector2(29, 45)
+
+[node name="Player" type="CharacterBody2D" unique_id=19650070]
+script = ExtResource("1_ft8w5")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1631454609]
+sprite_frames = SubResource("SpriteFrames_5h11f")
+frame_progress = 0.62246335
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=63733330]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_5h11f")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1136723466]
