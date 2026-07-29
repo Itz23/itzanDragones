@@ -1,20 +1,17 @@
 extends Control
 
-
 func _ready() -> void:
 	var dragon_name := _get_dragon_name(GameManager.current_level_id)
 	$VBox/Message.text = "¡Derrotaste al Dragón de %s!" % dragon_name
 	$VBox/Stats.text = "Puntaje: %d | Gemas: %d" % [GameManager.score, GameManager.gems]
-	# Load victory image, remove its background, and show frames if available
+
 	var frames := GameManager.cargar_sprite_sin_fondo("res://sprites/victory.png")
 	if frames:
-		$ItzanVictory.sprite_frames = frames
-		$ItzanVictory.animation = "default"
-		$ItzanVictory.play()
+		$VictorySprite.sprite_frames = frames
+		$VictorySprite.animation = "default"
+		$VictorySprite.play()
 
-	$VBox/MapButton.text = "CONTINUAR"
-	$VBox/MapButton.pressed.connect(_on_continue_pressed)
-
+	$VBox/ContinueButton.pressed.connect(_on_continue_pressed)
 
 func _get_dragon_name(level_id: String) -> String:
 	match level_id:
@@ -28,13 +25,7 @@ func _get_dragon_name(level_id: String) -> String:
 			return "Fuego"
 	return "?"
 
-
-func _on_map_pressed() -> void:
-	GameManager.return_to_map()
-
-
 func _on_continue_pressed() -> void:
-	# Save progress (mark dragon defeated) and return to map
 	GameManager.save_progress()
 	GameManager.current_state = GameManager.GameState.MAP
 	GameManager.return_to_map()

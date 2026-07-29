@@ -33,13 +33,17 @@ Videojuego 2D de acción, aventura y plataformas desarrollado en **Godot Engine 
 - Colisiones: suelo, enemigos, objetos y obstáculos
 - Progresión por dragones elementales
 
-## Espacio para arte
+## Arte del personaje
 
-Los sprites actuales son **placeholders** (formas de colores). Sustituye los nodos `Visual` en:
+Los sprites de **Iltzan** están en `assets/player/` y las animaciones en `player/iltzan_sprite_frames.tres`.
+Para regenerarlos desde las hojas en `_extract/itzan sprites/`:
 
-- `player/player.tscn`
-- `enemies/`
-- `objects/`
+```
+python assets/player/_build_sprites.py
+python assets/player/_gen_sprite_frames.py
+```
+
+Otros elementos (enemigos, objetos) siguen usando placeholders de colores.
 
 ## Estructura del proyecto
 

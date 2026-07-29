@@ -8,7 +8,7 @@ class_name Player
 @export var attack_cooldown := 0.45
 @export var invulnerability_time := 1.2
 
-@onready var sprite: ColorRect = $Visual
+@onready var sprite: AnimatedSprite2D = $Visual
 @onready var attack_area: Area2D = $AttackArea
 @onready var attack_shape: CollisionShape2D = $AttackArea/CollisionShape2D
 @onready var crouch_shape: CollisionShape2D = $CollisionShape2D
@@ -19,11 +19,14 @@ var is_attacking := false
 var is_dashing := false
 var is_crouching := false
 var is_invulnerable := false
+var is_fire_attack := false
 var facing := 1
 var dash_timer := 0.0
 var attack_timer := 0.0
 var last_move_press_time := {"left": -999.0, "right": -999.0}
 const DOUBLE_TAP_THRESHOLD := 0.28
+const STAND_VISUAL_POS := Vector2(-14, -22)
+const CROUCH_VISUAL_POS := Vector2(-14, -12)
 
 
 func _ready() -> void:
@@ -40,6 +43,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		_process_movement(delta)
 	_update_attack_area()
+	_update_animation()
 	move_and_slide()
 
 
@@ -57,6 +61,7 @@ func _update_timers(delta: float) -> void:
 		attack_timer -= delta
 		if attack_timer <= 0.0:
 			is_attacking = false
+			is_fire_attack = false
 			attack_area.monitoring = false
 			attack_shape.disabled = true
 
@@ -132,27 +137,48 @@ func _start_dash(direction: int) -> void:
 	dash_timer = dash_duration
 	facing = direction
 	velocity = Vector2(direction * dash_speed, 0.0)
-	sprite.modulate = Color(0.6, 0.85, 1.0)
+	sprite.play("dash")
 
 
 func _process_dash(_delta: float) -> void:
 	velocity.y = 0.0
-	sprite.modulate = Color(0.6, 0.85, 1.0) if is_dashing else Color.WHITE
 
 
 func _start_attack(is_fire: bool) -> void:
 	is_attacking = true
+	is_fire_attack = is_fire
 	attack_timer = attack_cooldown
 	attack_area.monitoring = true
 	attack_shape.disabled = false
-	sprite.modulate = Color(1.0, 0.55, 0.2) if is_fire else Color(1.0, 0.95, 0.7)
 	attack_area.set_meta("fire_attack", is_fire)
+	sprite.play("attack_fire" if is_fire else "attack")
 
 
 func _update_attack_area() -> void:
 	attack_area.position.x = 42.0 * facing
-	if not is_attacking:
-		sprite.modulate = Color.WHITE
+
+
+func _update_animation() -> void:
+	if is_invulnerable and sprite.animation == "hurt":
+		return
+	if is_dashing:
+		return
+	if is_attacking:
+		return
+
+	if is_crouching:
+		_play_if_needed("crouch")
+	elif not is_on_floor():
+		_play_if_needed("jump" if velocity.y < 0.0 else "fall")
+	elif absf(velocity.x) > 10.0:
+		_play_if_needed("run")
+	else:
+		_play_if_needed("idle")
+
+
+func _play_if_needed(animation_name: String) -> void:
+	if sprite.animation != animation_name:
+		sprite.play(animation_name)
 
 
 func _set_crouch_state(enabled: bool) -> void:
@@ -160,13 +186,11 @@ func _set_crouch_state(enabled: bool) -> void:
 	if enabled:
 		shape.size = Vector2(28, 24)
 		crouch_shape.position = Vector2(0, 12)
-		sprite.size = Vector2(28, 24)
-		sprite.position = Vector2(-14, -12)
+		sprite.position = CROUCH_VISUAL_POS
 	else:
 		shape.size = Vector2(28, 44)
 		crouch_shape.position = Vector2(0, -2)
-		sprite.size = Vector2(28, 44)
-		sprite.position = Vector2(-14, -22)
+		sprite.position = STAND_VISUAL_POS
 
 
 func take_hit(source: Node2D = null) -> void:
@@ -176,13 +200,18 @@ func take_hit(source: Node2D = null) -> void:
 		return
 	is_invulnerable = true
 	GameManager.take_damage()
-	sprite.modulate = Color(1.0, 0.35, 0.35)
+	sprite.play("hurt")
 	var knockback_x := 180.0
 	if source:
 		knockback_x *= sign(global_position.x - source.global_position.x)
 	velocity = Vector2(knockback_x, -220.0)
 	await get_tree().create_timer(invulnerability_time).timeout
-	is_invulnerable = false
+	var tree := get_tree()
+	if tree:
+		await tree.create_timer(invulnerability_time).timeout
+		is_invulnerable = false
+	else:
+		is_invulnerable = false
 	sprite.modulate = Color.WHITE
 
 

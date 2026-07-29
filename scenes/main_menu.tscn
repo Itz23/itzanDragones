@@ -1,6 +1,7 @@
-[gd_scene format=3 uid="uid://mainmenu001"]
+[gd_scene load_steps=3 format=3 uid="uid://mainmenu001"]
 
 [ext_resource type="Script" uid="uid://cb3qrvolkydod" path="res://scenes/main_menu.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://player/iltzan_sprite_frames.tres" id="2"]
 
 [node name="MainMenu" type="Control" unique_id=268306500]
 layout_mode = 3
@@ -62,7 +63,14 @@ custom_minimum_size = Vector2(280, 48)
 layout_mode = 2
 text = "SALIR"
 
+[node name="ItzanPreview" type="AnimatedSprite2D" parent="."]
+position = Vector2(640, 520)
+scale = Vector2(3, 3)
+sprite_frames = ExtResource("2")
+animation = &"idle"
+autoplay = "idle"
+
 [node name="Note" type="Label" parent="VBox" unique_id=1463613508]
 layout_mode = 2
-text = "Espacio reservado para sprites y animaciones"
+text = "← → mover | ↑ saltar | A atacar"
 horizontal_alignment = 1
